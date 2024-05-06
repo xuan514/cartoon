@@ -3,10 +3,10 @@ import os
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'path/to/your/'
+UPLOAD_FOLDER = '/convert/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-@app.route('/convert', methods=['POST'])
+@app.route('/', methods=['POST'])
 def convert():
     if 'imageUpload' in request.files:
         file = request.files['imageUpload']
