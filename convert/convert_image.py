@@ -8,14 +8,14 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/convert', methods=['POST'])
 def convert():
-    if 'imageUpload' in request.files:
-        file = request.files['imageUpload']
+    if request.files.get('imageUpload'):
+        file = request.files.get('imageUpload')
         if file.filename != '':
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(filepath)
             return jsonify({'imagePath': filepath})
-    elif 'videoUpload' in request.files:
-        file = request.files['videoUpload']
+    elif request.files.get('videoUpload'):
+        file = request.files.get('videoUpload')
         if file.filename != '':
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
             file.save(filepath)
