@@ -147,7 +147,7 @@
         imageLabel.style.display = 'inline-block';
     });
     // 檔案轉換
-    imageForm .addEventListener('click', function(event) {
+    imageForm .addEventListener('button', function(event) {
         const fileType = imageUpload.value.split('.').pop().toLowerCase();
         if(fileType !== 'jpg' && fileType !== 'jpeg' && fileType !== 'png' && fileType !== 'gif'){
             alert('請選取圖片格式的檔案!!');
