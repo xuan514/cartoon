@@ -149,7 +149,7 @@
     // 檔案轉換
     imageForm .addEventListener('submit', function(event) {
         const fileType = imageUpload.value.split('.').pop().toLowerCase();
-        if(fileType!=('image/*')){
+        if(fileType!=('image/')){
             alert('請選取圖片格式的檔案!!');
             event.preventDefault();
         }else{
