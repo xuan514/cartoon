@@ -148,71 +148,71 @@
     });
     // 圖片轉換
     document.addEventListener("DOMContentLoaded", function() {
-    const imageConvertBtn = document.getElementById("imageConvertBtn");
-
-    imageConvertBtn.addEventListener("click", async function() {
-        const file = document.getElementById("imageUpload").files[0];
-
-        if (!file) {
-            alert("請選擇圖片文件");
-            return;
-        }
-
-        // 將文件轉換為 TensorFlow.js 可用的格式
-        const imageTensor = await fileToTensor(file);
-
-        // 處理圖片轉換的過程
-        const transformedImage = await processImage(imageTensor);
-
-        // 顯示轉換結果
-        displayImage(transformedImage);
-    });
-
-    // 將文件轉換為 TensorFlow.js 可用的格式
-    async function fileToTensor(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const image = new Image();
-                image.onload = () => {
-                    const tensor = tf.browser.fromPixels(image);
-                    resolve(tensor);
-                };
-                image.onerror = (error) => {
-                    reject(error);
-                };
-                image.src = event.target.result;
-            };
-            reader.readAsDataURL(file);
+        const imageConvertBtn = document.getElementById("imageConvertBtn");
+    
+        imageConvertBtn.addEventListener("click", async function() {
+            const file = document.getElementById("imageUpload").files[0];
+    
+            if (!file) {
+                alert("請選擇圖片文件");
+                return;
+            }
+    
+            // 將文件轉換為 TensorFlow.js 可用的格式
+            const imageTensor = await fileToTensor(file);
+    
+            // 處理圖片轉換的過程
+            const transformedImage = await processImage(imageTensor);
+    
+            // 顯示轉換結果
+            displayImage(transformedImage);
         });
-    }
-
-    // 處理圖片轉換的過程
-    async function processImage(imageTensor) {
-        // 在這裡使用 TensorFlow.js 的 API 進行圖片轉換
-        // 這裡省略轉換過程，假設 transformedImage 為轉換後的圖片張量
-        const transformedImage = imageTensor; // 假設轉換後的圖片張量就是原始圖片張量
-        return transformedImage;
-    }
-
-    // 顯示轉換結果
-    function displayImage(imageTensor) {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        const imageData = new ImageData(imageTensor.shape[0], imageTensor.shape[1]);
-
-        tf.browser.toPixels(imageTensor, imageData.data)
-            .then(() => {
-                canvas.width = imageTensor.shape[0];
-                canvas.height = imageTensor.shape[1];
-                ctx.putImageData(imageData, 0, 0);
-                document.body.appendChild(canvas);
-            })
-            .catch((error) => {
-                console.error("Failed to display image:", error);
+    
+        // 將文件轉換為 TensorFlow.js 可用的格式
+        async function fileToTensor(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const image = new Image();
+                    image.onload = () => {
+                        const tensor = tf.browser.fromPixels(image);
+                        resolve(tensor);
+                    };
+                    image.onerror = (error) => {
+                        reject(error);
+                    };
+                    image.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
             });
-    }
-});
+        }
+    
+        // 處理圖片轉換的過程
+        async function processImage(imageTensor) {
+            // 在這裡使用 TensorFlow.js 的 API 進行圖片轉換
+            // 這裡省略轉換過程，假設 transformedImage 為轉換後的圖片張量
+            const transformedImage = imageTensor; // 假設轉換後的圖片張量就是原始圖片張量
+            return transformedImage;
+        }
+    
+        // 顯示轉換結果
+        function displayImage(imageTensor) {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            const imageData = new ImageData(imageTensor.shape[0], imageTensor.shape[1]);
+    
+            tf.browser.toPixels(imageTensor, imageData.data)
+                .then(() => {
+                    canvas.width = imageTensor.shape[0];
+                    canvas.height = imageTensor.shape[1];
+                    ctx.putImageData(imageData, 0, 0);
+                    document.body.appendChild(canvas);
+                })
+                .catch((error) => {
+                    console.error("Failed to display image:", error);
+                });
+        }
+    });
 
     const videoUpload = document.getElementById('videoUpload');
     const videoPreview = document.getElementById('videoPreview');
