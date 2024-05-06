@@ -217,6 +217,21 @@
         if (fileType !== 'mp4' && fileType !== 'webm' && fileType !== 'ogg'){
             alert('請選取影片格式的檔案!');
             event.preventDefault();
+        }else {
+            const formData = new FormData(videoForm);
+            fetch('/convert', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('影片上傳成功!');
+                // 在此處執行將影片保存到指定資料夾的操作
+                console.log('影片已保存到指定資料夾:', data.videoPath);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
         }
     });
 
