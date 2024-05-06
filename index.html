@@ -149,38 +149,9 @@
     // 檔案轉換
     imageForm .addEventListener('submit', function(event) {
         const fileType = imageUpload.value.split('.').pop().toLowerCase();
-        event.preventDefault();
-    
-        var fileInput = document.getElementById('fileInput');
-        var file = fileInput.files[0];
-        
         if(fileType !== 'jpg' && fileType !== 'jpeg' && fileType !== 'png' && fileType !== 'gif'){
             alert('請選取圖片格式的檔案!!');
             event.preventDefault();
-        }else {
-            var formData = new FormData();
-            formData.append('fileInput', file);
-            
-            fetch('/convert', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    showMessage('檔案上傳成功');
-                } else {
-                    showMessage('檔案上傳失敗');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-            });
-            
-            function showMessage(message) {
-                var messageDiv = document.getElementById('message');
-                messageDiv.textContent = message;
-            }
         }
     });
 
