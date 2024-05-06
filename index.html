@@ -153,38 +153,79 @@
             alert('請選取圖片格式的檔案!!');
             event.preventDefault();
         }else{
-            const express = require('express');
-            const multer = require('multer');
-            const path = require('path');
             const fs = require('fs');
+            const path = require('path');
+            const glob = require('glob');
+            const { promisify } = require('util');
+            const tf = require('@tensorflow/tfjs-node');
             
-            const app = express();
+            const utils = require('./tools/utils');
+            const generator = require('./net/generator');
             
-            // 設置上傳目錄
-            const uploadDirectory = 'uploads/';
+            async function parseArgs() {
+                // 解析命令行參數
+                // 請自行替換以下變數的默認值
+                return {
+                    checkpointDir: 'checkpoint/generator_Hayao_weight',
+                    testDir: 'dataset/test/other',
+                    saveDir: 'Hayao/style/other',
+                    ifAdjustBrightness: true
+                };
+            }
             
-            // 設置 Multer 中間件來處理圖片上傳
-            const storage = multer.diskStorage({
-                destination: function (req, file, cb) {
-                    cb(null, uploadDirectory);
-                },
-                filename: function (req, file, cb) {
-                    cb(null, file.originalname);
+            function checkFolder(folder) {
+                // 檢查並創建目錄
+                if (!fs.existsSync(folder)) {
+                    fs.mkdirSync(folder, { recursive: true });
                 }
-            });
+            }
             
-            const upload = multer({ storage: storage });
+            async function test(checkpointDir, styleName, testDir, ifAdjustBrightness, imgSize = [256, 256]) {
+                // 創建結果目錄
+                const resultDir = path.join('results', styleName);
+                checkFolder(resultDir);
             
-            // 處理圖片上傳
-            app.post('/upload/image', upload.single('image'), (req, res) => {
-                res.send('圖片已成功上傳');
-            });
+                // 獲取測試文件列表
+                const testFiles = await promisify(glob)(path.join(testDir, '*.*'));
             
-            app.listen(3000, () => {
-                console.log('伺服器正在監聽端口 3000');
-            });
-
-
+                // 加載模型
+                const model = new generator.G_net(); // 使用生成器類別創建模型
+                const testReal = tf.tensor([], [1, null, null, 3], 'float32', 'test');
+                model.build([1, ...imgSize, 3]);
+                model(fake);
+            
+                const checkpoint = tf.train.getCheckpointState(checkpointDir); // 獲取檢查點狀態
+                if (checkpoint && checkpoint.modelCheckpointPath) { // 如果存在檢查點
+                    const ckptName = path.basename(checkpoint.modelCheckpointPath); // 獲取檢查點文件名
+                    await model.loadWeights(path.join(checkpointDir, ckptName)); // 加載權重
+                    console.log(`[*] Success to read ${path.join(checkpointDir, ckptName)}`); // 輸出成功讀取模型的信息
+                } else {
+                    console.log(" [*] Failed to find a checkpoint"); // 輸出找不到檢查點的信息
+                    return;
+                }
+            
+                begin = Date.now();
+                for (const sampleFile of testFiles) {
+                    // 加載測試圖片數據
+                    const sampleImage = utils.loadTestData(sampleFile, imgSize);
+                    const imagePath = path.join(resultDir, path.basename(sampleFile)); // 結果圖片保存路徑
+                    const fakeImg = model.predict(sampleImage); // 生成假圖像
+                    if (ifAdjustBrightness) {
+                        utils.saveImages(fakeImg, imagePath, sampleFile); // 保存調整亮度後的圖像
+                    } else {
+                        utils.saveImages(fakeImg, imagePath, null); // 保存原始圖像
+                    }
+                }
+                end = Date.now();
+                console.log(`test-time: ${end - begin} ms`); // 輸出測試時間
+                console.log(`one image test time: ${(end - begin) / testFiles.length} ms`); // 輸出單張圖像測試時間
+            }
+            
+            async function main() {
+                const args = await parseArgs(); // 解析命令行參數
+                console.log(args.checkpointDir); // 輸出檢查點目錄
+                await test(args.checkpointDir, args.saveDir, args.testDir, args.ifAdjustBrightness); // 執行測試
+            }
         }
     });
 
