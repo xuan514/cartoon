@@ -148,10 +148,16 @@
     });
     // 檔案轉換
     imageForm .addEventListener('submit', function(event) {
-        const fileType = imageUpload.value.split('.').pop().toLowerCase();
-        if(fileType !== 'jpg' && fileType !== 'jpeg' && fileType !== 'png' && fileType !== 'gif'){
-            alert('請選取圖片格式的檔案!!');
-            event.preventDefault();
+        event.preventDefault(); // 防止表單預設提交行為
+        const imageUpload = document.getElementById('imageUpload');
+        if (imageUpload.files.length > 0) {
+            const fileType = imageUpload.files[0].type;
+            if (fileType.startsWith('image/')) {
+                this.action = '/upload/image'; // 設置 action 屬性為圖片上傳端點
+                this.submit(); // 提交表單
+            } else {
+                alert('請選擇圖片格式的檔案!!');
+            }
         }
     });
 
@@ -199,9 +205,16 @@
     });
     // 檔案轉換
     videoForm.addEventListener('submit', function(event) {
-        if (fileType !== 'mp4' && fileType !== 'webm' && fileType !== 'ogg'){
-            alert('請選取影片格式的檔案!');
-            event.preventDefault();
+        event.preventDefault(); // 防止表單預設提交行為
+        const videoUpload = document.getElementById('videoUpload');
+        if (videoUpload.files.length > 0) {
+            const fileType = videoUpload.files[0].type;
+            if (fileType.startsWith('video/')) {
+                this.action = '/upload/video'; // 設置 action 屬性為影片上傳端點
+                this.submit(); // 提交表單
+            } else {
+                alert('請選擇影片格式的檔案!!');
+            }
         }
     });
 
