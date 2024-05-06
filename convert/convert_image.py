@@ -3,7 +3,7 @@ import os
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'path/to/your/upload/folder'
+UPLOAD_FOLDER = 'path/to/your/'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/convert', methods=['POST'])
