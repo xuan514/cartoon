@@ -149,7 +149,7 @@
     // 檔案轉換
     imageForm .addEventListener('submit', function(event) {
         const fileType = imageUpload.value.split('.').pop().toLowerCase();
-        if(fileType !== 'jpg' && fileType !== 'jpeg' && fileType !== 'png' && fileType !== 'gif'){
+        if(fileType!=('image/*')){
             alert('請選取圖片格式的檔案!!');
             event.preventDefault();
         }else{
@@ -161,24 +161,29 @@
             const app = express();
             
             // 設置上傳目錄
+            const uploadDirectory = 'uploads/';
+            
+            // 設置 Multer 中間件來處理圖片上傳
             const storage = multer.diskStorage({
                 destination: function (req, file, cb) {
-                    cb(null, '/') // 將文件存儲到uploads資料夾中
+                    cb(null, uploadDirectory);
                 },
                 filename: function (req, file, cb) {
-                    cb(null, file.originalname) // 使用原始文件名稱保存文件
+                    cb(null, file.originalname);
                 }
             });
+            
             const upload = multer({ storage: storage });
             
             // 處理圖片上傳
-            app.post('/', upload.single('imageUpload'), (req, res) => {
-                res.send('圖片上傳成功');
+            app.post('/upload/image', upload.single('image'), (req, res) => {
+                res.send('圖片已成功上傳');
             });
             
             app.listen(3000, () => {
-                console.log('Server is running on port 3000');
+                console.log('伺服器正在監聽端口 3000');
             });
+
 
         }
     });
@@ -231,7 +236,7 @@
         const videoUpload = document.getElementById('videoUpload');
         if (videoUpload.files.length > 0) {
             const fileType = videoUpload.files[0].type;
-            if (fileType.startsWith('video/')) {
+            if (fileType.startsWith('video/*')) {
                 this.action = '/convert/'; // 設置 action 屬性為影片上傳端點
                 this.submit(); // 提交表單
             } else {
