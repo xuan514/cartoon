@@ -153,11 +153,11 @@
     });
     
     // 圖片轉換
-    imageForm .addEventListener('submit', function(event) {
+    imageForm .addEventListener('submit', function(e) {
         const fileType = imageUpload.value.split('.').pop().toLowerCase();
         if(fileType !== 'jpg' && fileType !== 'jpeg' && fileType !== 'png' && fileType !== 'gif'){    
             alert('請選取圖片格式的檔案!!');
-            event.preventDefault();
+            e.preventDefault();
         } 
         else{
             // 初始化 Pyodide
