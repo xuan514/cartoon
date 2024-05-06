@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anime</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #f0f0f0;
+    }
+    .title {
+        font-size: 24px;
+        margin-top: 20px;
+    }
+    .container {
+        width: 1024px;
+        display: flex;
+        flex-wrap: wrap; /* 允許彈性布局換行 */
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+    .upload-box{
+        width: 48%;
+        height: 350px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        margin-bottom: 5px;
+        padding: 5px;
+    }
+    .download-box {
+        width: 48%;
+        height: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        padding: 5px;
+    }
+    .upload-box img,
+    .upload-box video {
+        max-width: 100%; /* 不超出box */
+        display: block; /* 讓圖片和視頻置中 */
+        margin: 0 auto; /* 水平置中 */
+    }
+    form{
+       margin: 10px; 
+    }
+    input[type='file'],input[type='submit'],input[type='reset'],#imagelabel,#videolabel{
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<div class="title">風格轉換生成器</div>
+
+<div class="container">
+    <div class="upload-box">
+        <div>圖片預覽</div>
+        <form id="imageform" enctype="multipart/form-data" method="post" >
+            <img id="imagePreview" src="#" alt="Preview" style="width: auto; height: 250px; display: none;"><br>
+            <label id="imagelabel" for="imageUpload">+ 點擊選擇圖片</label>
+            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+            <span id="file-name"></span>
+            <input type="reset" id="imageResetBtn" value="重選" style="display: none;">
+            <input type="submit" id="imageConvertBtn" value="轉換" style="display: none;">
+        </form>
+    </div>
+    <div class="upload-box">
+        <div>影片預覽</div>
+        <form id="videoform" enctype="multipart/form-data" method="post" >
+            <video id="videoPreview" controls style="width: auto; height: 240px; display: none;">
+                <source src="#" type="video/mp4">
+                瀏覽器沒有支援影片播放!
+            </video><br>
+            <label id="videolabel" for="videoUpload">+ 點擊選擇影片</label>
+            <input type="file" id="videoUpload" accept="video/*" style="display: none;">
+            <span id="video-file-name"></span>
+            <input type="reset" id="videoResetBtn" value="重選" style="display: none;">
+            <input type="submit" id="videoConvertBtn" value="轉換" style="display: none;">
+        </form>
+    </div>
+    <div class="download-box">
+        <div>轉換結果</div>
+        <img id="convertedImg" src="#" alt="Converted Image" style="width: auto; height: 250px; display: none;"><br>
+        <a id="downloadBtn" href="#" download="converted_image.jpg" style="display: none;">下載轉換後圖片</a>
+    </div>
+    <div class="download-box">
+        <div>轉換結果</div>
+        
+    </div>
+</div>
+
+<script>
+    const imageUpload = document.getElementById('imageUpload');
+    const imagePreview = document.getElementById('imagePreview');
+    const imageLabel = document.getElementById('imagelabel');
+    const imageFileName = document.getElementById('file-name');
+    const imageResetBtn = document.getElementById('imageResetBtn');
+    const imageConvertBtn = document.getElementById('imageConvertBtn');
+    const imageForm = document.getElementById('imageform');
+    // 圖片預覽
+    imageUpload.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            // 顯示檔案名稱
+            imageFileName.innerText = file.name;
+
+            imageLabel.style.display = 'none';
+            imageResetBtn.style.display = 'inline-block';
+            imageConvertBtn.style.display = 'inline-block';
+            // 顯示預覽圖片
+            const reader = new FileReader();
+            reader.onload = function() {
+                imagePreview.src = reader.result;
+                imagePreview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }else{
+            // 如果沒有選擇文件，隱藏預覽和檔案名稱
+            imagePreview.style.display = 'none';
+            imageFileName.innerText = '';
+            imageResetBtn.style.display = 'none';
+            imageConvertBtn.style.display = 'none';
+        }
+    });
+    // 圖片重選
+    imageResetBtn.addEventListener('click', function() {
+        imageUpload.value = ''; // 清除已選擇的文件
+        imageFileName.innerText = ''; // 清除檔案名稱
+
+        imagePreview.style.display = 'none'; 
+        this.style.display = 'none'; 
+        imageConvertBtn.style.display = 'none';
+        imageLabel.style.display = 'inline-block';
+    });
+    // 檔案轉換
+    imageForm .addEventListener('submit', function(event) {
+        const fileType = imageUpload.value.split('.').pop().toLowerCase();
+        if(fileType !== 'jpg' && fileType !== 'jpeg' && fileType !== 'png' && fileType !== 'gif'){
+            alert('請選取圖片格式的檔案!!');
+            event.preventDefault();
+        }else {
+            const file = imageUpload.files[0];
+            const formData = new FormData();
+            formData.append('image', file);
+            fetch('/convert/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                // 顯示轉換後的圖片
+                const convertedImg = document.getElementById('convertedImg');
+                const downloadBtn = document.getElementById('downloadBtn');
+                convertedImg.src = data.converted_image_path;
+                convertedImg.style.display = 'block';
+                downloadBtn.href = data.converted_image_path;
+                downloadBtn.style.display = 'inline-block';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    });
+
+    const videoUpload = document.getElementById('videoUpload');
+    const videoPreview = document.getElementById('videoPreview');
+    const videoLabel = document.getElementById('videolabel');
+    const videoFileName = document.getElementById('video-file-name');
+    const videoResetBtn = document.getElementById('videoResetBtn');
+    const videoConvertBtn = document.getElementById('videoConvertBtn');
+    const videoForm = document.getElementById('videoform');
+    // 影片預覽
+    videoUpload.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            // 顯示檔案名稱
+            videoFileName.innerText = file.name;
+            // 顯示重選按鈕
+            videoLabel.style.display = 'none';
+            videoResetBtn.style.display = 'inline-block';
+            videoConvertBtn.style.display = 'inline-block';
+            // 顯示預覽影片
+            const reader = new FileReader();
+            reader.onload = function() {
+                videoPreview.src = reader.result;
+                videoPreview.style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }else {
+            // 如果沒有選擇文件，隱藏預覽和檔案名稱
+            videoPreview.style.display = 'none';
+            videoFileName.innerText = '';
+            // 隱藏重選按鈕
+            videoResetBtn.style.display = 'none';
+            videoConvertBtn.style.display = 'none';
+        }
+    });
+     // 影片重選
+     videoResetBtn.addEventListener('click', function() {
+        videoUpload.value = ''; // 清除已選擇的文件
+        videoFileName.innerText = ''; // 清除檔案名稱
+        videoPreview.style.display = 'none'; // 隱藏預覽影片
+        this.style.display = 'none'; // 隱藏重選按鈕
+        videoConvertBtn.style.display = 'none';
+        videoLabel.style.display = 'inline-block';
+    });
+    // 檔案轉換
+    videoForm.addEventListener('submit', function(event) {
+        if (fileType !== 'mp4' && fileType !== 'webm' && fileType !== 'ogg'){
+            alert('請選取影片格式的檔案!');
+            event.preventDefault();
+        }
+    });
+
+</script>
+
+</body>
+</html>
