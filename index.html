@@ -69,7 +69,7 @@
 <div class="container">
     <div class="upload-box">
         <div>圖片預覽</div>
-        <form id="imageform" enctype="multipart/form-data" method="post" >
+        <form id="imageform" enctype="multipart/form-data" method="post"  action="/convert">
             <img id="imagePreview" src="#" alt="Preview" style="width: auto; height: 250px; display: none;"><br>
             <label id="imagelabel" for="imageUpload">+ 點擊選擇圖片</label>
             <input type="file" id="imageUpload" accept="image/*" style="display: none;">
@@ -80,7 +80,7 @@
     </div>
     <div class="upload-box">
         <div>影片預覽</div>
-        <form id="videoform" enctype="multipart/form-data" method="post" >
+        <form id="videoform" enctype="multipart/form-data" method="post"  action="/convert">
             <video id="videoPreview" controls style="width: auto; height: 240px; display: none;">
                 <source src="#" type="video/mp4">
                 瀏覽器沒有支援影片播放!
@@ -217,21 +217,6 @@
         if (fileType !== 'mp4' && fileType !== 'webm' && fileType !== 'ogg'){
             alert('請選取影片格式的檔案!');
             event.preventDefault();
-        }else {
-            const formData = new FormData(videoForm);
-            fetch('/convert', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert('影片上傳成功!');
-                // 在此處執行將影片保存到指定資料夾的操作
-                console.log('影片已保存到指定資料夾:', data.videoPath);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
         }
     });
 
