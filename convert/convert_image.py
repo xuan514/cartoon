@@ -1,6 +1,13 @@
 import os
 from flask import Flask, request, jsonify
+# 要更改權限的目錄或檔案路徑
+path = os.path.abspath(__name__)  # 取得當前腳本的絕對路徑
 
+# 設置只有擁有者具有讀取和寫入權限
+mode = 0o600
+
+# 更改權限
+os.chmod(path, mode)
 app = Flask(__name__)
 
 UPLOAD_FOLDER = ""
