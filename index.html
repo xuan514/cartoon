@@ -156,12 +156,11 @@
         if(fileType !== 'jpg' && fileType !== 'jpeg' && fileType !== 'png' && fileType !== 'gif'){    
             alert('請選取圖片格式的檔案!!');
             event.preventDefault();
-        }else
-</script>  
+        }else{
     <py-script>
         import sys
-        sys.path.append('./tools')
-        sys.path.append('./net')
+        sys.path.append('/tools')
+        sys.path.append('/net')
         import argparse
         from tools.utils import *
         import os
@@ -244,8 +243,7 @@
             test(arg.checkpoint_dir, arg.save_dir, arg.test_dir, arg.if_adjust_brightness)
     
     </py-script>
-<script>
-        
+        }
     });
 </script>
 <script>  
