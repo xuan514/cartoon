@@ -153,7 +153,7 @@
         if (imageUpload.files.length > 0) {
             const fileType = imageUpload.files[0].type;
             if (fileType.startsWith('image/')) {
-                this.action = '/upload/image'; // 設置 action 屬性為圖片上傳端點
+                this.action = '/convert/convert_image.js'; // 設置 action 屬性為圖片上傳端點
                 this.submit(); // 提交表單
             } else {
                 alert('請選擇圖片格式的檔案!!');
@@ -210,7 +210,7 @@
         if (videoUpload.files.length > 0) {
             const fileType = videoUpload.files[0].type;
             if (fileType.startsWith('video/')) {
-                this.action = '/upload/video'; // 設置 action 屬性為影片上傳端點
+                this.action = '/convert/'; // 設置 action 屬性為影片上傳端點
                 this.submit(); // 提交表單
             } else {
                 alert('請選擇影片格式的檔案!!');
