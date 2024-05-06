@@ -57,7 +57,7 @@
     form{
        margin: 10px; 
     }
-    input[type='file'],input[type='button'],input[type='reset'],#imagelabel,#videolabel{
+    input[type='file'],input[type='submit'],input[type='reset'],#imagelabel,#videolabel{
         cursor: pointer;
     }
 </style>
@@ -75,7 +75,7 @@
             <input type="file" id="imageUpload" accept="image/*" style="display: none;">
             <span id="file-name"></span>
             <input type="reset" id="imageResetBtn" value="重選" style="display: none;">
-            <input type="button" id="imageConvertBtn" value="轉換" style="display: none;">
+            <input type="submit" id="imageConvertBtn" value="轉換" style="display: none;">
         </form>
     </div>
     <div class="upload-box">
@@ -89,7 +89,7 @@
             <input type="file" id="videoUpload" accept="video/*" style="display: none;">
             <span id="video-file-name"></span>
             <input type="reset" id="videoResetBtn" value="重選" style="display: none;">
-            <input type="button" id="videoConvertBtn" value="轉換" style="display: none;">
+            <input type="submit" id="videoConvertBtn" value="轉換" style="display: none;">
         </form>
     </div>
     <div class="download-box">
@@ -147,7 +147,7 @@
         imageLabel.style.display = 'inline-block';
     });
     // 檔案轉換
-    imageForm .addEventListener('button', function(event) {
+    imageForm .addEventListener('submit', function(event) {
         const fileType = imageUpload.value.split('.').pop().toLowerCase();
         if(fileType !== 'jpg' && fileType !== 'jpeg' && fileType !== 'png' && fileType !== 'gif'){
             alert('請選取圖片格式的檔案!!');
@@ -213,7 +213,7 @@
         videoLabel.style.display = 'inline-block';
     });
     // 檔案轉換
-    videoForm.addEventListener('click', function(event) {
+    videoForm.addEventListener('submit', function(event) {
         if (fileType !== 'mp4' && fileType !== 'webm' && fileType !== 'ogg'){
             alert('請選取影片格式的檔案!');
             event.preventDefault();
