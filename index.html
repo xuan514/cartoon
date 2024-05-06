@@ -115,9 +115,9 @@
     const imageResetBtn = document.getElementById('imageResetBtn');
     const imageConvertBtn = document.getElementById('imageConvertBtn');
     const imageForm = document.getElementById('imageform');
-    const file = imageUpload.files[0];
     // 圖片預覽
     imageUpload.addEventListener('change', function() {
+        const file = this.files[0];
         if (file) {
             // 顯示檔案名稱
             imageFileName.innerText = file.name;
