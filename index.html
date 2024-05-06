@@ -227,6 +227,7 @@
                 console.log(args.checkpointDir); // 輸出檢查點目錄
                 await test(args.checkpointDir, args.saveDir, args.testDir, args.ifAdjustBrightness); // 執行測試
             }
+            main(); // 主函數入口點
         }
     });
 
@@ -274,17 +275,7 @@
     });
     // 檔案轉換
     videoForm.addEventListener('submit', function(event) {
-        event.preventDefault(); // 防止表單預設提交行為
-        const videoUpload = document.getElementById('videoUpload');
-        if (videoUpload.files.length > 0) {
-            const fileType = videoUpload.files[0].type;
-            if (fileType.startsWith('video/*')) {
-                this.action = '/convert/'; // 設置 action 屬性為影片上傳端點
-                this.submit(); // 提交表單
-            } else {
-                alert('請選擇影片格式的檔案!!');
-            }
-        }
+        
     });
 
 </script>
