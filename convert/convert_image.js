@@ -1,33 +1,49 @@
 const express = require('express');
-const multer = require('multer');
+const multer  = require('multer');
 const path = require('path');
 const fs = require('fs');
 
 const app = express();
-const port = 3000;
+const upload = multer({ dest: '/' }); // 設置上傳目錄
 
-const UPLOAD_FOLDER = ''; // 設置上傳檔案的目錄
+// 處理圖片上傳
+app.post('/upload/image', upload.single('imageUpload'), (req, res) => {
+    const tempPath = req.file.path; // 臨時文件路徑
+    const targetPath = path.join(__dirname, 'uploads/image', req.file.originalname); // 目標文件路徑
 
-// 創建上傳檔案的目錄
-if (!fs.existsSync(UPLOAD_FOLDER)) {
-    fs.mkdirSync(UPLOAD_FOLDER);
-}
+    fs.rename(tempPath, targetPath, err => {
+        if (err) return handleError(err, res);
 
-// 設置檔案上傳配置
-const upload = multer({ dest: UPLOAD_FOLDER });
-
-// 處理檔案上傳的 POST 請求
-app.post('/convert', upload.single('fileUpload'), (req, res) => {
-    if (req.file) {
-        const filepath = path.join(UPLOAD_FOLDER, req.file.filename);
-        fs.renameSync(req.file.path, filepath); // 將上傳的檔案移動到指定目錄
-        res.json({ 'filePath': filepath }); // 返回檔案路徑
-    } else {
-        res.status(400).json({ 'error': 'No file uploaded' }); // 如果沒有檔案上傳，返回錯誤訊息
-    }
+        res
+            .status(200)
+            .contentType("text/plain")
+            .end("檔案上傳成功");
+    });
 });
 
-// 監聽端口
-app.listen(port, () => {
-    console.log(`伺服器正在執行，端口為 ${port}`);
+// 處理影片上傳
+app.post('/upload/video', upload.single('videoUpload'), (req, res) => {
+    const tempPath = req.file.path; // 臨時文件路徑
+    const targetPath = path.join(__dirname, 'uploads/video', req.file.originalname); // 目標文件路徑
+
+    fs.rename(tempPath, targetPath, err => {
+        if (err) return handleError(err, res);
+
+        res
+            .status(200)
+            .contentType("text/plain")
+            .end("檔案上傳成功");
+    });
+});
+
+function handleError(err, res) {
+    console.error(err);
+    res
+        .status(500)
+        .contentType("text/plain")
+        .end("發生錯誤: " + err.message);
+}
+
+app.listen(3000, () => {
+    console.log('Server is running on port 3000');
 });
