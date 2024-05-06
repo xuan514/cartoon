@@ -109,6 +109,8 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+    const loader = document.createElement('py-loader');
+    document.body.append(loader);
     const imageUpload = document.getElementById('imageUpload');
     const imagePreview = document.getElementById('imagePreview');
     const imageLabel = document.getElementById('imagelabel');
