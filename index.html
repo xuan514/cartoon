@@ -57,7 +57,7 @@
     form{
        margin: 10px; 
     }
-    input[type='file'],input[type='submit'],input[type='reset'],#imagelabel,#videolabel{
+    input[type='file'],input[type='button'],input[type='reset'],#imagelabel,#videolabel{
         cursor: pointer;
     }
 </style>
@@ -75,7 +75,7 @@
             <input type="file" id="imageUpload" accept="image/*" style="display: none;">
             <span id="file-name"></span>
             <input type="reset" id="imageResetBtn" value="重選" style="display: none;">
-            <input type="submit" id="imageConvertBtn" value="轉換" style="display: none;">
+            <input type="button" id="imageConvertBtn" value="轉換" style="display: none;">
         </form>
     </div>
     <div class="upload-box">
@@ -153,27 +153,36 @@
             alert('請選取圖片格式的檔案!!');
             event.preventDefault();
         }else {
-            const file = imageUpload.files[0];
-            const formData = new FormData();
-            formData.append('image', file);
-            fetch('/convert/', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert(data.message);
-                // 顯示轉換後的圖片
-                const convertedImg = document.getElementById('convertedImg');
-                const downloadBtn = document.getElementById('downloadBtn');
-                convertedImg.src = data.converted_image_path;
-                convertedImg.style.display = 'block';
-                downloadBtn.href = data.converted_image_path;
-                downloadBtn.style.display = 'inline-block';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+            var formData = new FormData();
+            var fileInput = document.getElementById('imageUpload');
+            var file = fileInput.files[0];
+
+            formData.append('file', file);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/data', true);
+
+            xhr.upload.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    var percentComplete = (e.loaded / e.total) * 100;
+                    document.getElementById('progressBar').value = percentComplete;
+                }
+            };
+
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // 處理完成後的操作
+                        console.log('Upload completed successfully.');
+                    } else {
+                        // 處理錯誤
+                        console.error('Upload failed. Status: ' + xhr.status);
+                    }
+                }
+            };
+
+            xhr.send(formData);
+            }
         }
     });
 
