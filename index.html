@@ -148,16 +148,38 @@
     });
     // 檔案轉換
     imageForm .addEventListener('submit', function(event) {
-        event.preventDefault(); // 防止表單預設提交行為
-        const imageUpload = document.getElementById('imageUpload');
-        if (imageUpload.files.length > 0) {
-            const fileType = imageUpload.files[0].type;
-            if (fileType.startsWith('image/')) {
-                this.action = '/convert/convert_image.js'; // 設置 action 屬性為圖片上傳端點
-                this.submit(); // 提交表單
-            } else {
-                alert('請選擇圖片格式的檔案!!');
-            }
+        const fileType = imageUpload.value.split('.').pop().toLowerCase();
+        if(fileType !== 'jpg' && fileType !== 'jpeg' && fileType !== 'png' && fileType !== 'gif'){
+            alert('請選取圖片格式的檔案!!');
+            event.preventDefault();
+        }else{
+            const express = require('express');
+            const multer = require('multer');
+            const path = require('path');
+            const fs = require('fs');
+            
+            const app = express();
+            
+            // 設置上傳目錄
+            const storage = multer.diskStorage({
+                destination: function (req, file, cb) {
+                    cb(null, '/') // 將文件存儲到uploads資料夾中
+                },
+                filename: function (req, file, cb) {
+                    cb(null, file.originalname) // 使用原始文件名稱保存文件
+                }
+            });
+            const upload = multer({ storage: storage });
+            
+            // 處理圖片上傳
+            app.post('/', upload.single('imageUpload'), (req, res) => {
+                res.send('圖片上傳成功');
+            });
+            
+            app.listen(3000, () => {
+                console.log('Server is running on port 3000');
+            });
+
         }
     });
 
