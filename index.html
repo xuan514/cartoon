@@ -149,10 +149,7 @@
     // 檔案轉換
     imageForm .addEventListener('submit', function(event) {
         const fileType = imageUpload.value.split('.').pop().toLowerCase();
-        if(fileType!=='image/*'){
-            alert('請選取圖片格式的檔案!!');
-            event.preventDefault();
-        }else{
+        if(fileType.startsWith('image/*'){
             const file = imageUpload.files[0];
             const fs = require('fs');
             const path = require('path');
@@ -228,6 +225,9 @@
                 await test(args.checkpointDir, args.saveDir, args.testDir, args.ifAdjustBrightness); // 執行測試
             }
             main(); // 主函數入口點
+        }else{
+            alert('請選取圖片格式的檔案!!');
+            event.preventDefault();
         }
     });
 
