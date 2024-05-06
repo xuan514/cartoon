@@ -103,6 +103,9 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.12.0/dist/tf.min.js"></script>
+<link rel="stylesheet" href="https://pyscript.net/alpha/pyscript.css" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+<script defer src="https://pyscript.net/alpha/pyscript.js"></script>
 <script>
     const imageUpload = document.getElementById('imageUpload');
     const imagePreview = document.getElementById('imagePreview');
@@ -111,9 +114,9 @@
     const imageResetBtn = document.getElementById('imageResetBtn');
     const imageConvertBtn = document.getElementById('imageConvertBtn');
     const imageForm = document.getElementById('imageform');
+    const file = imageUpload.files[0];
     // 圖片預覽
     imageUpload.addEventListener('change', function() {
-        const file = this.files[0];
         if (file) {
             // 顯示檔案名稱
             imageFileName.innerText = file.name;
@@ -146,74 +149,101 @@
         imageConvertBtn.style.display = 'none';
         imageLabel.style.display = 'inline-block';
     });
+    
     // 圖片轉換
-    document.addEventListener("DOMContentLoaded", function() {
-        const imageConvertBtn = document.getElementById("imageConvertBtn");
-    
-        imageConvertBtn.addEventListener("click", async function() {
-            const file = document.getElementById("imageUpload").files[0];
-    
-            if (!file) {
-                alert("請選擇圖片文件");
-                return;
-            }
-    
-            // 將文件轉換為 TensorFlow.js 可用的格式
-            const imageTensor = await fileToTensor(file);
-    
-            // 處理圖片轉換的過程
-            const transformedImage = await processImage(imageTensor);
-    
-            // 顯示轉換結果
-            displayImage(transformedImage);
-        });
-    
-        // 將文件轉換為 TensorFlow.js 可用的格式
-        async function fileToTensor(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    const image = new Image();
-                    image.onload = () => {
-                        const tensor = tf.browser.fromPixels(image);
-                        resolve(tensor);
-                    };
-                    image.onerror = (error) => {
-                        reject(error);
-                    };
-                    image.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-    
-        // 處理圖片轉換的過程
-        async function processImage(imageTensor) {
-            // 在這裡使用 TensorFlow.js 的 API 進行圖片轉換
-            // 這裡省略轉換過程，假設 transformedImage 為轉換後的圖片張量
-            const transformedImage = imageTensor; // 假設轉換後的圖片張量就是原始圖片張量
-            return transformedImage;
-        }
-    
-        // 顯示轉換結果
-        function displayImage(imageTensor) {
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            const imageData = new ImageData(imageTensor.shape[0], imageTensor.shape[1]);
-    
-            tf.browser.toPixels(imageTensor, imageData.data)
-                .then(() => {
-                    canvas.width = imageTensor.shape[0];
-                    canvas.height = imageTensor.shape[1];
-                    ctx.putImageData(imageData, 0, 0);
-                    document.body.appendChild(canvas);
-                })
-                .catch((error) => {
-                    console.error("Failed to display image:", error);
-                });
-        }
-    });
+    imageForm .addEventListener('submit', function(event) {
+        const fileType = imageUpload.value.split('.').pop().toLowerCase();
+        if(fileType !== 'jpg' && fileType !== 'jpeg' && fileType !== 'png' && fileType !== 'gif'){    
+            alert('請選取圖片格式的檔案!!');
+            event.preventDefault();
+        }else{
+        
+    <py-script>
+        import argparse
+        from tools.utils import *
+        import os
+        from tqdm import tqdm
+        from glob import glob
+        import time
+        import numpy as np
+        import tensorflow as tf
+        from net import generator
+        os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+        
+        def parse_args():
+            desc = "AnimeGANv2"
+            parser = argparse.ArgumentParser(description=desc)
+        
+            parser.add_argument('--checkpoint_dir', type=str, default='checkpoint/'+'generator_Hayao_weight',
+                                help='Directory name to save the checkpoints')
+            parser.add_argument('--test_dir', type=str, default='<script>file</script>',
+                                help='Directory name of test photos')
+            parser.add_argument('--save_dir', type=str, default='convertimg',
+                                help='what style you want to get')
+            parser.add_argument('--if_adjust_brightness', type=bool, default=True,
+                                help='adjust brightness by the real photo')
+        
+            """checking arguments"""
+        
+            return parser.parse_args()
+        
+        def stats_graph(graph):
+            flops = tf.profiler.profile(graph, options=tf.profiler.ProfileOptionBuilder.float_operation())
+            # params = tf.profiler.profile(graph, options=tf.profiler.ProfileOptionBuilder.trainable_variables_parameter())
+            #print('FLOPs: {}'.format(flops.total_float_ops))
+        
+        def test(checkpoint_dir, style_name, test_dir, if_adjust_brightness, img_size=[256,256]):
+            # tf.reset_default_graph()
+            result_dir = 'result/img'+style_name
+            check_folder(result_dir)
+            test_files = glob('{}/*.*'.format(test_dir))
+        
+            test_real = tf.placeholder(tf.float32, [1, None, None, 3], name='test')
+        
+            with tf.variable_scope("generator", reuse=False):
+                test_generated = generator.G_net(test_real).fake
+            saver = tf.train.Saver()
+        
+            gpu_options = tf.GPUOptions(allow_growth=True)
+            with tf.Session(config=tf.ConfigProto(allow_soft_placement=True, gpu_options=gpu_options)) as sess:
+                # tf.global_variables_initializer().run()
+                # load model
+                ckpt = tf.train.get_checkpoint_state(checkpoint_dir)  # checkpoint file information
+                if ckpt and ckpt.model_checkpoint_path:
+                    ckpt_name = os.path.basename(ckpt.model_checkpoint_path)  # first line
+                    saver.restore(sess, os.path.join(checkpoint_dir, ckpt_name))
+                    #print(" [*] Success to read {}".format(os.path.join(checkpoint_dir, ckpt_name)))
+                else:
+                    #print(" [*] Failed to find a checkpoint")
+                    return
+                # stats_graph(tf.get_default_graph())
+        
+                begin = time.time()
+                for sample_file  in tqdm(test_files) :
+                    # print('Processing image: ' + sample_file)
+                    sample_image = np.asarray(load_test_data(sample_file, img_size))
+                    image_path = os.path.join(result_dir,'{0}'.format(os.path.basename(sample_file)))
+                    fake_img = sess.run(test_generated, feed_dict = {test_real : sample_image})
+                    if if_adjust_brightness:
+                        save_images(fake_img, image_path, sample_file)
+                    else:
+                        save_images(fake_img, image_path, None)
+                end = time.time()
+                #print(f'test-time: {end-begin} s')
+                #print(f'one image test time : {(end-begin)/len(test_files)} s')
+        if __name__ == '__main__':
+            import os
+        
+            os.environ['CUDA_VISIBLE_DEVICES'] = '/gpu:0'
+        
+            arg = parse_args()
+            print(arg.checkpoint_dir)
+            test(arg.checkpoint_dir, arg.save_dir, arg.test_dir, arg.if_adjust_brightness)
 
+    </py-script>
+        }
+    )};
+    
     const videoUpload = document.getElementById('videoUpload');
     const videoPreview = document.getElementById('videoPreview');
     const videoLabel = document.getElementById('videolabel');
