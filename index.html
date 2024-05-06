@@ -102,7 +102,7 @@
         
     </div>
 </div>
-
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.12.0/dist/tf.min.js"></script>
 <script>
     const imageUpload = document.getElementById('imageUpload');
     const imagePreview = document.getElementById('imagePreview');
@@ -146,90 +146,73 @@
         imageConvertBtn.style.display = 'none';
         imageLabel.style.display = 'inline-block';
     });
-    // 檔案轉換
-    imageForm .addEventListener('submit', function(event) {
-        const fileType = imageUpload.value.split('.').pop().toLowerCase();
-        if(fileType !== 'jpg' && fileType !== 'jpeg' && fileType !== 'png' && fileType !== 'gif'){    
-            alert('請選取圖片格式的檔案!!');
-            event.preventDefault();
-        }else{
-            const file = imageUpload.files[0];
-            const fs = require('fs');
-            const path = require('path');
-            const glob = require('glob');
-            const { promisify } = require('util');
-            const tf = require('@tensorflow/tfjs-node');
-            
-            const utils = require('./tools/utils');
-            const generator = require('./net/generator');
-            
-            async function parseArgs() {
-                // 解析命令行參數
-                // 請自行替換以下變數的默認值
-                return {
-                    checkpointDir: 'checkpoint/generator_Hayao_weight',
-                    testDir: 'file',
-                    saveDir: '/',
-                    ifAdjustBrightness: true
-                };
-            }
-            
-            function checkFolder(folder) {
-                // 檢查並創建目錄
-                if (!fs.existsSync(folder)) {
-                    fs.mkdirSync(folder, { recursive: true });
-                }
-            }
-            
-            async function test(checkpointDir, styleName, testDir, ifAdjustBrightness, imgSize = [256, 256]) {
-                // 創建結果目錄
-                const resultDir = path.join('results', styleName);
-                checkFolder(resultDir);
-            
-                // 獲取測試文件列表
-                const testFiles = await promisify(glob)(path.join(testDir, '*.*'));
-            
-                // 加載模型
-                const model = new generator.G_net(); // 使用生成器類別創建模型
-                const testReal = tf.tensor([], [1, null, null, 3], 'float32', 'test');
-                model.build([1, ...imgSize, 3]);
-                model(fake);
-            
-                const checkpoint = tf.train.getCheckpointState(checkpointDir); // 獲取檢查點狀態
-                if (checkpoint && checkpoint.modelCheckpointPath) { // 如果存在檢查點
-                    const ckptName = path.basename(checkpoint.modelCheckpointPath); // 獲取檢查點文件名
-                    await model.loadWeights(path.join(checkpointDir, ckptName)); // 加載權重
-                    console.log(`[*] Success to read ${path.join(checkpointDir, ckptName)}`); // 輸出成功讀取模型的信息
-                } else {
-                    console.log(" [*] Failed to find a checkpoint"); // 輸出找不到檢查點的信息
-                    return;
-                }
-            
-                begin = Date.now();
-                for (const sampleFile of testFiles) {
-                    // 加載測試圖片數據
-                    const sampleImage = utils.loadTestData(sampleFile, imgSize);
-                    const imagePath = path.join(resultDir, path.basename(sampleFile)); // 結果圖片保存路徑
-                    const fakeImg = model.predict(sampleImage); // 生成假圖像
-                    if (ifAdjustBrightness) {
-                        utils.saveImages(fakeImg, imagePath, sampleFile); // 保存調整亮度後的圖像
-                    } else {
-                        utils.saveImages(fakeImg, imagePath, null); // 保存原始圖像
-                    }
-                }
-                end = Date.now();
-                console.log(`test-time: ${end - begin} ms`); // 輸出測試時間
-                console.log(`one image test time: ${(end - begin) / testFiles.length} ms`); // 輸出單張圖像測試時間
-            }
-            
-            async function main() {
-                const args = await parseArgs(); // 解析命令行參數
-                console.log(args.checkpointDir); // 輸出檢查點目錄
-                await test(args.checkpointDir, args.saveDir, args.testDir, args.ifAdjustBrightness); // 執行測試
-            }
-            main(); // 主函數入口點
+    // 圖片轉換
+    document.addEventListener("DOMContentLoaded", function() {
+    const imageConvertBtn = document.getElementById("imageConvertBtn");
+
+    imageConvertBtn.addEventListener("click", async function() {
+        const file = document.getElementById("imageUpload").files[0];
+
+        if (!file) {
+            alert("請選擇圖片文件");
+            return;
         }
+
+        // 將文件轉換為 TensorFlow.js 可用的格式
+        const imageTensor = await fileToTensor(file);
+
+        // 處理圖片轉換的過程
+        const transformedImage = await processImage(imageTensor);
+
+        // 顯示轉換結果
+        displayImage(transformedImage);
     });
+
+    // 將文件轉換為 TensorFlow.js 可用的格式
+    async function fileToTensor(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const image = new Image();
+                image.onload = () => {
+                    const tensor = tf.browser.fromPixels(image);
+                    resolve(tensor);
+                };
+                image.onerror = (error) => {
+                    reject(error);
+                };
+                image.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // 處理圖片轉換的過程
+    async function processImage(imageTensor) {
+        // 在這裡使用 TensorFlow.js 的 API 進行圖片轉換
+        // 這裡省略轉換過程，假設 transformedImage 為轉換後的圖片張量
+        const transformedImage = imageTensor; // 假設轉換後的圖片張量就是原始圖片張量
+        return transformedImage;
+    }
+
+    // 顯示轉換結果
+    function displayImage(imageTensor) {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const imageData = new ImageData(imageTensor.shape[0], imageTensor.shape[1]);
+
+        tf.browser.toPixels(imageTensor, imageData.data)
+            .then(() => {
+                canvas.width = imageTensor.shape[0];
+                canvas.height = imageTensor.shape[1];
+                ctx.putImageData(imageData, 0, 0);
+                document.body.appendChild(canvas);
+            })
+            .catch((error) => {
+                console.error("Failed to display image:", error);
+            });
+    }
+});
 
     const videoUpload = document.getElementById('videoUpload');
     const videoPreview = document.getElementById('videoPreview');
