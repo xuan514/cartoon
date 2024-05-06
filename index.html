@@ -108,6 +108,7 @@
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
     const imageUpload = document.getElementById('imageUpload');
     const imagePreview = document.getElementById('imagePreview');
     const imageLabel = document.getElementById('imagelabel');
@@ -262,7 +263,8 @@
             }
         }
     });
-
+    });
+    
     const videoUpload = document.getElementById('videoUpload');
     const videoPreview = document.getElementById('videoPreview');
     const videoLabel = document.getElementById('videolabel');
