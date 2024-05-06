@@ -153,6 +153,7 @@
             alert('請選取圖片格式的檔案!!');
             event.preventDefault();
         }else{
+            const file = imageUpload.files[0];
             const fs = require('fs');
             const path = require('path');
             const glob = require('glob');
@@ -167,8 +168,8 @@
                 // 請自行替換以下變數的默認值
                 return {
                     checkpointDir: 'checkpoint/generator_Hayao_weight',
-                    testDir: 'dataset/test/other',
-                    saveDir: 'Hayao/style/other',
+                    testDir: 'file',
+                    saveDir: '/',
                     ifAdjustBrightness: true
                 };
             }
