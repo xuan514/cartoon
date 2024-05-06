@@ -158,7 +158,7 @@
             alert('請選取圖片格式的檔案!!');
             event.preventDefault();
         } else{
-        py.run{    
+        py.run(    
             import sys
             sys.path.append('/tools')
             sys.path.append('/net')
@@ -243,7 +243,7 @@
                 arg = parse_args()
                 print(arg.checkpoint_dir)
                 test(arg.checkpoint_dir, arg.save_dir, arg.test_dir, arg.if_adjust_brightness)
-            }
+            );
         }
     });
 
