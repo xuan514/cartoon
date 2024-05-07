@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Convert</title>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.12.0/dist/tf.min.js"></script>
-<script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/"></script>
+<script src="https://cdn.jsdelivr.net/pyodide/v0.18.1/full/pyodide.js"></script>
 
 <style>
     body {
@@ -158,7 +158,10 @@
             e.preventDefault(); // 阻止表單提交
             alert('Start converting...'); // 示範：開始轉換
             // 在這裡執行 Pyodide 以進行圖片轉換
-            const pythonCode = `
+            loadPyodide({
+                indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.18.1/full/'
+            }).then((pyodide) => {
+                const pythonCode = `
                 import sys
                 sys.path.append('/tools')
                 sys.path.append('/net')
@@ -244,11 +247,10 @@
                     print(arg.checkpoint_dir)
                     test(arg.checkpoint_dir, arg.save_dir, arg.test_dir, arg.if_adjust_brightness)
             `;
-                loadPyodide({
-                    indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.18.1/full/'
-                }).then((pyodide) => {
-                    pyodide.runPython(pythonCode);
-                });
+                pyodide.runPython(pythonCode);
+            });
+                
+            
             } 
     });
 
