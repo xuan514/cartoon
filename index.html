@@ -73,7 +73,7 @@
 <div class="container">
     <div class="upload-box">
         <div>圖片預覽</div>
-        <form id="imageform" enctype="multipart/form-data" method="" >
+        <form id="imageform" enctype="multipart/form-data" >
             <img id="imagePreview" src="#" alt="Preview" style="width: auto; height: 250px; display: none;"><br>
             <label id="imagelabel" for="imageUpload">+ 點擊選擇圖片</label>
             <input type="file" id="imageUpload" accept="image/*" style="display: none;">
@@ -84,7 +84,7 @@
     </div>
     <div class="upload-box">
         <div>影片預覽</div>
-        <form id="videoform" enctype="multipart/form-data" method=""  >
+        <form id="videoform" enctype="multipart/form-data" >
             <video id="videoPreview" controls style="width: auto; height: 240px; display: none;">
                 <source src="#" type="video/mp4">
                 瀏覽器沒有支援影片播放!
@@ -168,7 +168,7 @@
             const pyodide = await loadPyodide({
                 indexURL : 'https://cdn.jsdelivr.net/pyodide/v0.18.1/full/'
             });
-            event.preventDefault(); // 阻止表單提交
+            e.preventDefault(); // 阻止表單提交
             alert('Start converting...'); // 示範：開始轉換
             // 在這裡執行 Pyodide 以進行圖片轉換
             const pythonCode = `
