@@ -93,11 +93,10 @@
     });
     
     // 圖片轉換
-    imageConvertBtn.addEventListener('submit', function(e) {
+    imageConvertBtn.addEventListener('submit', function() {
         const fileType = imageUpload.value.split('.').pop().toLowerCase();
         if(fileType !== 'jpg' && fileType !== 'jpeg' && fileType !== 'png' && fileType !== 'gif'){    
             alert('請選取圖片格式的檔案!!');
-            e.preventDefault();
         } 
         else{
             imgupload.style.display = 'none';
