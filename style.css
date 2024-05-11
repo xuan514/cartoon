@@ -18,7 +18,7 @@ body {
     justify-content: space-between;
     margin-top: 20px;
 }
-#imgupload,#vidupload{
+.load-box {
     width: 48%;
     height: 350px;
     display: flex;
@@ -30,19 +30,8 @@ body {
     margin-bottom: 5px;
     padding: 5px;
 }
-#imgdownload,#viddownload {
-    width: 48%;
-    height: 300px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    border: 1px solid #ccc;
-    background-color: #fff;
-    padding: 5px;
-}
-#imgupload img,#vidupload img,#imgdownload img,#viddownload img,
-#imgupload video,#vidupload video,#imgdownload video,#viddownload video{
+.load-box img,
+.load video {
     max-width: 100%; /* 不超出box */
     display: block; /* 讓圖片和視頻置中 */
     margin: 0 auto; /* 水平置中 */
