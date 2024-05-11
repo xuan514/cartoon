@@ -19,7 +19,7 @@
             <input type="file" id="imageUpload" accept="image/*" style="display: none;">
             <span id="file-name"></span>
             <input type="reset" id="imageResetBtn" value="重選" style="display: none;">
-            <input type="submit" id="imageConvertBtn" value="轉換" style="display: none;">
+            <input type="button" id="imageConvertBtn" value="轉換" style="display: none;">
         </form>
         <form id="imgdnform" method="get" style="display: none;">
             <img id="convertedImg" src="#" alt="ConvertedImage" style="width: auto; height: 250px; display: none;"><br>
@@ -93,7 +93,7 @@
     });
     
     // 圖片轉換
-    imageConvertBtn.addEventListener('submit', function() {
+    imageConvertBtn.addEventListener('click', function() {
         const fileType = imageUpload.value.split('.').pop().toLowerCase();
         if(fileType !== 'jpg' && fileType !== 'jpeg' && fileType !== 'png' && fileType !== 'gif'){    
             alert('請選取圖片格式的檔案!!');
