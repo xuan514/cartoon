@@ -31,7 +31,7 @@ body {
     padding: 5px;
 }
 .load-box img,
-.load video {
+.load-box video {
     max-width: 100%; /* 不超出box */
     display: block; /* 讓圖片和視頻置中 */
     margin: 0 auto; /* 水平置中 */
