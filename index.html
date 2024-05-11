@@ -3,38 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="/style.css">
 <title>Convert</title>
-
 </head>
 <body>
 <div class="title">風格轉換器</div>
 <div class="container">
-    <div class="load-box">
-        <div id="imgup">圖片預覽</div>
-        <div id="imgdn" style="display: none;">轉換結果</div>
+    <div id="imgup">
+        <div>圖片預覽</div>
         <form id="imgupform" enctype="multipart/form-data" method="post">
-            <img id="imagePreview" src="#" alt="Preview" style="width: auto; height: 250px; display: none;"><br>
-            <label id="imagelabel" for="imageUpload">+ 點擊選擇圖片</label>
-            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
-            <span id="file-name"></span>
-            <input type="reset" id="imageResetBtn" value="重選" style="display: none;">
-            <input type="submit" id="imageConvertBtn" value="轉換" style="display: none;">
-        </form>
-        <form id="imgdnform" method="get" style="display: none;">
-            <img id="convertedImg" src="#" alt="ConvertedImage" style="width: auto; height: 250px; display: none;"><br>
-        <a id="imgdnBtn" href="#" download="" style="display: none;">下載轉換後圖片</a>
+        <img id="imagePreview" src="#" alt="Preview" style="width: auto; height: 250px; display: none;"><br>
+        <label id="imagelabel" for="imageUpload">+ 點擊選擇圖片</label>
+        <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+        <span id="file-name"></span>
+        <input type="reset" id="imageResetBtn" value="重選" style="display: none;">
+        <input type="button" id="imageConvertBtn" value="轉換" style="display: none;">
         </form>
     </div>
-    <div>
-        <div id="imgdn" style="display: none;">轉換結果</div>
+    <div id="imgdn" style="display: none;">
+        <div>轉換結果</div>
         <form id="imgdnform" method="get">
-            <img id="convertedImg" src="#" alt="ConvertedImage" style="width: auto; height: 250px; display: none;"><br>
-        <a id="imgdnBtn" href="#" download="" style="display: none;">下載轉換後圖片</a>
+            <img id="convertedImg" src="#" alt="ConvertedImage" style="width: auto; height: 250px;"><br>
+        <a id="imgdnBtn" href="#" download="">下載轉換後圖片</a>
         </form>
     </div>
-    <div class="load-box">
-        <div id="vidup">影片預覽</div>
+    <div id="vidup">
+        <div>影片預覽</div>
         <form id="vidupform" enctype="multipart/form-data" method="post">
             <video id="videoPreview" controls style="width: auto; height: 240px; display: none;">
                 <source src="#" type="video/mp4">
@@ -47,11 +40,11 @@
             <input type="submit" id="videoConvertBtn" value="轉換" style="display: none;">
         </form>
     </div>
-    <div>
-        <div id="viddn" style="display: none;">轉換結果</div>
+    <div id="viddn" style="display: none;">
+        <div>轉換結果</div>
         <form id="viddnform" method="get" style="display: none;">
             <img id="convertedVid" src="#" alt="ConvertedVideo" style="width: auto; height: 240px; display: none;"><br>
-            <a id="viddnBtn" href="#" download="" style="display: none;">下載轉換後影片</a>
+            <a id="viddnBtn" href="#" download="">下載轉換後影片</a>
         </form>
     </div>
 </div>
@@ -63,8 +56,8 @@
     const imageResetBtn = document.getElementById('imageResetBtn');
     const convertedImg = document.getElementById('convertedImg');
     const imageConvertBtn = document.getElementById('imageConvertBtn');
-    const imgupload = document.getElementById('imgupload');
-    const imgdownload = document.getElementById('imgdownload');
+    const imgup = document.getElementById('imgup');
+    const imgdn = document.getElementById('imgdn');
     // 圖片預覽
     imageUpload.addEventListener('change', function() {
         const file = this.files[0];
@@ -102,14 +95,15 @@
     });
     
     // 圖片轉換
-    imageConvertBtn.addEventListener('click', function() {
+    imageConvertBtn.addEventListener('click', function(e) {
         const fileType = imageUpload.value.split('.').pop().toLowerCase();
         if(fileType !== 'jpg' && fileType !== 'jpeg' && fileType !== 'png' && fileType !== 'gif'){    
             alert('請選取圖片格式的檔案!!');
+            e.preventDefault();
         } 
         else{
-            imgupload.style.display = 'none';
-            imgdownload.style.display = 'block';
+            imgup.style.display = 'none';
+            imgdn.style.display = 'block';
         }
     });
 
@@ -119,8 +113,8 @@
     const videoFileName = document.getElementById('video-file-name');
     const videoResetBtn = document.getElementById('videoResetBtn');
     const videoConvertBtn = document.getElementById('videoConvertBtn');
-    const vidupload = document.getElementById('vidupload');
-    const viddownload = document.getElementById('viddownload');
+    const vidup = document.getElementById('vidup');
+    const viddn = document.getElementById('viddn');
     // 影片預覽
     videoUpload.addEventListener('change', function() {
         const file = this.files[0];
@@ -158,7 +152,15 @@
     });
     // 檔案轉換
     videoConvertBtn.addEventListener('submit', function(event) {
-        
+        const fileType = videoUpload.value.split('.').pop().toLowerCase();
+        if(fileType !== 'jpg' && fileType !== 'jpeg' && fileType !== 'png' && fileType !== 'gif'){    
+            alert('請選取圖片格式的檔案!!');
+            e.preventDefault();
+        } 
+        else{
+            imgup.style.display = 'none';
+            imgdn.style.display = 'block';
+        }
     });
 </script>
 </body>
