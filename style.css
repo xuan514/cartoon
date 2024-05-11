@@ -39,6 +39,6 @@ body {
 form{
    margin: 10px; 
 }
-input[type='file'],input[type='submit'],input[type='reset'],#imagelabel,#videolabel{
+input[type='file'],input[type='button'],input[type='reset'],#imagelabel,#videolabel{
     cursor: pointer;
 }
